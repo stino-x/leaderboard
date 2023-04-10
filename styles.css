@@ -53,6 +53,8 @@ form {
   width: 50%;
   border: 2px solid black;
   font-family: 'Comic Neue', cursive;
+  padding-top: 2%;
+  padding-bottom: 2%;
 }
 
 #score {
@@ -60,6 +62,8 @@ form {
   width: 50%;
   border: 2px solid black;
   font-family: 'Comic Neue', cursive;
+  padding-top: 2%;
+  padding-bottom: 2%;
 }
 
 #submit {
@@ -73,6 +77,16 @@ form {
   position: relative;
   border: 2px solid black;
   cursor: pointer;
+}
+
+input::placeholder {
+  color: black;
+  padding-left: 4%;
+}
+
+.error-message {
+  margin-top: 5%;
+  font-family: 'Comic Neue', cursive;
 }
 
 .refresh {
