@@ -1,7 +1,9 @@
+import Updateposition from './input.js';
+
 const refreshButton = document.querySelector('.refresh');
 const submitButton = document.querySelector('#submit');
-const Name = document.querySelector('#name').value;
-const Score = document.querySelector('#score').value;
+const namevalue = document.querySelector('#name');
+const score = document.querySelector('#score');
 const scoreList = document.querySelector('#scores');
 const Form = document.querySelector('form');
 const displayError = (message) => {
@@ -11,13 +13,25 @@ const displayError = (message) => {
   errorMessage.textContent = message;
   container.appendChild = errorMessage;
 };
-const updatePosition = {};
-updatePosition[Name] = Score;
-const submitScore = () => {
-  fetch('https://us-central1-js-capstone-backend.cloudfunctions.net/api/', {
+const newCompetitor = (data) => {
+  while (scoreList.firstChild) {
+    scoreList.removeChild(scoreList.firstChild);
+  }
+  data.forEach((person) => {
+    const contestant = document.createElement('li');
+    const contestantID = data.indexOf(person) + 1;
+    contestant.setAttribute('id', `${contestantID}`);
+    contestant.innerHTML = `${person.user}:${person.score}`;
+    scoreList.appendChild(contestant);
+  });
+};
+const submitScore = (e) => {
+  e.preventDefault();
+  const updatePosition = new Updateposition(namevalue.value, score.value);
+  fetch('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/austin/scores/', {
     method: 'POST',
     headers: {
-      'Content-Type': 'leaderboard/json',
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(updatePosition),
   })
@@ -29,32 +43,23 @@ const submitScore = () => {
         // Check if the form is valid
         if (!response.ok) {
           // If the form is not valid, display an error message
-          displayError('Please fill out all required fields.');
+          displayError('Leaderboard score was not created correctly');
         } else {
           // If the form is valid, submit it
-          Form.submit();
+          Form.reset();
         }
       });
-    })
-    .catch((error) => { console.error(error); });
+    });
+  Form.reset();
 };
-
 const displayScore = () => {
-  window.addEventListener('Onload', () => {
-    fetch('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/:id/scores')
-      .then((response) => response.json())
-      .then((data) => {
-        const contestant = document.createElement('div');
-        contestant.innerHTML = data.result;
-        scoreList.appendChild(contestant);
-      })
-      .catch((error) => { console.error(error); });
-  });
+  fetch('https://us-central1-js-capstone-backend.cloudfunctions.net/api/games/austin/scores/')
+    .then((response) => response.json())
+    .then((data) => {
+      newCompetitor(data.result);
+    });
 };
 
-submitButton.addEventListener('click', () => {
-  submitScore();
-});
-refreshButton.addEventListener('click', () => {
-  displayScore();
-});
+submitButton.addEventListener('click', submitScore);
+refreshButton.addEventListener('click', displayScore);
+displayScore();
